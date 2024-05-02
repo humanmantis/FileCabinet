@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace FileCabinet
 {
     internal class Employee
     {
+        public static uint NextId = 1;
         public uint Id { get; set; }
         public string Surname { get; set; }
         public string Name { get; set; }
@@ -17,13 +12,18 @@ namespace FileCabinet
         public string Position { get; set; }
         public string Unit { get; set; }
         public ushort Room { get; set; }
-        public PhoneAttribute Phone { get; set; }
-        public EmailAddressAttribute Email { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
         public decimal Salary { get; set; }
-        public DateOnly Date { get; set; }
+        public DateTime HireDate { get; set; }
         public string Note { get; set; }
+
+        public Employee()
+        {
+            Id = NextId;
+            NextId++;
+        }
         public Employee(
-            uint id,
             string surname,
             string name,
             string middleName,
@@ -31,14 +31,14 @@ namespace FileCabinet
             string position,
             string unit,
             ushort room,
-            PhoneAttribute phone,
-            EmailAddressAttribute email,
+            string phone,
+            string email,
             decimal salary,
-            DateOnly date,
+            DateTime hireDate,
             string note
         )
         {
-            Id = id;
+            Id = NextId;
             Surname = surname;
             Name = name;
             MiddleName = middleName;
@@ -49,8 +49,26 @@ namespace FileCabinet
             Phone = phone;
             Email = email;
             Salary = salary;
-            Date = date;
+            HireDate = hireDate;
             Note = note;
+            NextId++;
         }
+
+        public override string ToString()
+        {
+            return $"ID: {Id}\n" +
+                $"Surname: {Surname}\n" +
+                $"Name: {Name}\n" +
+                $"Middle Name: {MiddleName}\n" +
+                $"Date of Birth: {Dob.ToShortDateString()}\n" +
+                $"Position: {Position}\n" +
+                $"Unit: {Unit}\n" +
+                $"Room: {Room}\n" +
+                $"Phone: {Phone}\n" +
+                $"Email: {Email}\n" +
+                $"Salary: {Salary}\n" +
+                $"Hire Date: {HireDate.ToShortDateString()}\n" +
+                $"Note: {Note}";
+        }   
     }
 }
