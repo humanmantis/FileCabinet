@@ -1,10 +1,10 @@
 ﻿
 namespace FileCabinet
 {
-    internal class Employee
+    public class Employee
     {
-        public static uint NextId = 1;
-        public uint Id { get; set; }
+        private protected static uint NextId = 1;
+        public uint Id { get; private protected set; }
         public string Surname { get; set; }
         public string Name { get; set; }
         public string MiddleName { get; set; }
@@ -66,9 +66,12 @@ namespace FileCabinet
                 $"Room: {Room}\n" +
                 $"Phone: {Phone}\n" +
                 $"Email: {Email}\n" +
-                $"Salary: {Salary}\n" +
                 $"Hire Date: {HireDate.ToShortDateString()}\n" +
                 $"Note: {Note}";
-        }   
+        }
+        public virtual decimal CalculateMonthlySalary()
+        {
+            return Salary;
+        }
     }
 }

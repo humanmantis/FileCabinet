@@ -1,21 +1,25 @@
-﻿namespace FileCabinet
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics.Metrics;
+
+namespace FileCabinet
 {
-    internal class EmployeeData
+    public class EmployeeData
     {
         private List<Employee> employees = new List<Employee>();
 
         public void FillWithTestData()
         {
-            employees.Add(new Employee("Ivanchenko", "Ivan", "Ivanovych", new DateTime(1980, 1, 1), "Engineer", "IT", 101, "123-45-67", "ivan@mail.com", 12345, new DateTime(2020, 1, 1), ""));
-            employees.Add(new Employee("Petrenko", "Petro", "Petrovych", new DateTime(1985, 2, 2), "Manager", "HR", 102, "123-45-68", "petro@mail.com", 23456, new DateTime(2020, 2, 2), ""));
-            employees.Add(new Employee("Mykulenko", "Mykola", "Mykolaiovych", new DateTime(1990, 3, 3), "Director", "Top", 103, "123-45-69", "mykola@mail.com", 34567, new DateTime(2020, 3, 3), ""));
+            employees.Add(new FixedSalaryEmployee("Ivanchenko", "Ivan", "Ivanovych", new DateTime(1980, 1, 1), "Engineer", "IT", 101, "123-45-67", "ivan@mail.com", 900, 20, new DateTime(2020, 1, 1), ""));
+            employees.Add(new HourlyWageEmployee("Petrenko", "Petro", "Petrovych", new DateTime(1985, 2, 2), "Manager", "HR", 102, "123-45-68", "petro@mail.com", 100, 185, new DateTime(2020, 2, 2), ""));
+            employees.Add(new PieceworkEmployee("Mykulenko", "Mykola", "Mykolaiovych", new DateTime(1990, 3, 3), "Director", "Top", 103, "123-45-69", "mykola@mail.com", new Dictionary<TaskPrices.TaskType, int>() { { TaskPrices.TaskType.Backend, 5 }, { TaskPrices.TaskType.Documentation, 4 } }, new DateTime(2020, 3, 3), ""));
         }
 
         public void AddRecord()
         {
             Console.WriteLine("Add a record: ");
+            EmployeeType type = InputEmployeeType();
 
-            Employee employee = new Employee();
+            Employee employee = GetEmployeeByType(type);
             FillEmployee(employee);
             employees.Add(employee);
 
@@ -30,7 +34,7 @@
             if (employee != null)
             {
                 Console.WriteLine("Are you sure you want to delete this record? (yes/no)");
-                string answer = Console.ReadLine();
+                string answer = ConsoleInputHandler.GetInput<string>("Are you sure you want to delete this record? (yes/no)");
                 if (answer == "yes")
                 {
                     employees.Remove(employee);
@@ -44,11 +48,6 @@
                 {
                     Console.WriteLine("Invalid answer");
                 }
-
-            }
-            else
-            {
-                Console.WriteLine("Record not found");
             }
         }
         public void UpdateRecord()
@@ -86,8 +85,7 @@
 
         private Employee FindEmployee()
         {
-            Console.Write("Enter ID: ");
-            uint id = Convert.ToUInt32(Console.ReadLine());
+            uint id = ConsoleInputHandler.GetInput<uint>("Enter ID: ");
             Employee employee = employees.Find(e => e.Id == id);
             if (employee == null)
             {
@@ -98,32 +96,82 @@
 
         private Employee FillEmployee(Employee employee)
         {
-            Console.Write("Enter Surname: ");
-            employee.Surname = Console.ReadLine() ?? "";
-            Console.Write("Enter Name: ");
-            employee.Name = Console.ReadLine() ?? "";
-            Console.Write("Enter Middle Name: ");
-            employee.MiddleName = Console.ReadLine() ?? "";
-            Console.Write("Enter Date of Birth: ");
-            employee.Dob = Convert.ToDateTime(Console.ReadLine());
-            Console.Write("Enter Position: ");
-            employee.Position = Console.ReadLine() ?? "";
-            Console.Write("Enter Unit: ");
-            employee.Unit = Console.ReadLine() ?? "";
-            Console.Write("Enter Room: ");
-            employee.Room = Convert.ToUInt16(Console.ReadLine());
-            Console.Write("Enter Phone: ");
-            employee.Phone = Console.ReadLine() ?? "";
-            Console.Write("Enter Email: ");
-            employee.Email = Console.ReadLine() ?? "";
-            Console.Write("Enter Salary: ");
-            employee.Salary = Convert.ToDecimal(Console.ReadLine());
-            Console.Write("Enter Hire Date: ");
-            employee.HireDate = Convert.ToDateTime(Console.ReadLine());
-            Console.Write("Enter Note: ");
-            employee.Note = Console.ReadLine() ?? "";
+            employee.Surname = ConsoleInputHandler.GetInput<string>("Enter Surname: ") ?? "";
+            employee.Name = ConsoleInputHandler.GetInput<string>("Enter Name: ") ?? "";
+            employee.MiddleName = ConsoleInputHandler.GetInput<string>("Enter Middle Name: ") ?? "";
+            employee.Dob = ConsoleInputHandler.GetInput<DateTime>("Enter Date of Birth: ");
+            employee.Position = ConsoleInputHandler.GetInput<string>("Enter Position: ") ?? "";
+            employee.Unit = ConsoleInputHandler.GetInput<string>("Enter Unit: ") ?? "";
+            employee.Room = ConsoleInputHandler.GetInput<ushort>("Enter Room: ");
+            employee.Phone = ConsoleInputHandler.GetInput<string>("Enter Phone: ") ?? "";
+            employee.Email = ConsoleInputHandler.GetInput<string>("Enter Email: ") ?? "";
+            employee.HireDate = ConsoleInputHandler.GetInput<DateTime>("Enter Hire Date: ");
+            employee.Note = ConsoleInputHandler.GetInput<string>("Enter Note: ") ?? "";
+
+            switch (employee.GetType())
+            {
+                case Type t when t == typeof(FixedSalaryEmployee):
+                    FixedSalaryEmployee fixedSalaryEmployee = (FixedSalaryEmployee)employee;
+                    fixedSalaryEmployee.DailyRate = ConsoleInputHandler.GetInput<decimal>("Enter Daily Rate: ");
+                    fixedSalaryEmployee.Workdays = ConsoleInputHandler.GetInput<uint>("Enter Workdays: ");
+                    break;
+
+                case Type t when t == typeof(HourlyWageEmployee):
+                    HourlyWageEmployee hourlyWageEmployee = (HourlyWageEmployee)employee;
+                    hourlyWageEmployee.HourlyRate = ConsoleInputHandler.GetInput<decimal>("Enter Hourly Rate: ");
+                    hourlyWageEmployee.HoursWorkedPerMonth = ConsoleInputHandler.GetInput<uint>("Enter Hours Worked Per Month: ");
+                    break;
+
+                case Type t when t == typeof(PieceworkEmployee):
+                    PieceworkEmployee pieceworkEmployee = (PieceworkEmployee)employee;
+                    pieceworkEmployee.CompletedTasks = new Dictionary<TaskPrices.TaskType, int>();
+                    foreach (TaskPrices.TaskType taskType in Enum.GetValues(typeof(TaskPrices.TaskType)))
+                    {
+                        pieceworkEmployee.CompletedTasks.Add(taskType, ConsoleInputHandler.GetInput<int>($"Enter number of {taskType}: "));
+                    }
+                    break;
+            }
 
             return employee;
         }
+
+        private EmployeeType InputEmployeeType()
+        {
+            string[] employeeTypeName = ["Fixed Salary", "Hourly Wage", "Piecework"];
+
+            Console.WriteLine("Please choose employee type:");
+            for (int i = 0; i < employeeTypeName.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {employeeTypeName[i]}");
+            }   
+ 
+            int choice = ConsoleInputHandler.GetInput<int>("Enter your choice: ");
+
+            if (choice < 1 || choice > employeeTypeName.Length)
+            {
+                Console.WriteLine("Invalid choice");
+                return InputEmployeeType();
+            }
+            
+       
+
+            return (EmployeeType)choice;
+        }
+
+        private Employee GetEmployeeByType(EmployeeType type)
+        {
+            switch (type)
+            {
+                case EmployeeType.FixedSalary:
+                    return new FixedSalaryEmployee();
+                case EmployeeType.HourlyWage:
+                    return new HourlyWageEmployee();
+                case EmployeeType.Piecework:
+                    return new PieceworkEmployee();
+                default:
+                    return new Employee();
+            }
+        }
     }
+
 }
