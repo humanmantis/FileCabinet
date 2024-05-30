@@ -2,7 +2,7 @@
 
 namespace FileCabinet
 {
-    internal enum MenuOption
+    public enum MenuOption
     {
         AddRecord = 1,
         DeleteRecord,

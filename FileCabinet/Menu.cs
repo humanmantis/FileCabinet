@@ -1,6 +1,6 @@
 ﻿namespace FileCabinet
 {
-    internal class Menu
+    public static class Menu
     {
         private static readonly string[] options = new string[]
         {
@@ -25,16 +25,15 @@
 
         public static MenuOption GetChoice()
         {
-            Console.Write("Enter your choice: ");
-            int choice = Convert.ToInt32(Console.ReadLine());
-            if (choice < 1 && choice > options.Length)
+            int choice = ConsoleInputHandler.GetInput<int>("Enter your choice: ");
+
+            if (choice < 1 || choice > options.Length)
             {
                 Console.WriteLine("Invalid choice");
                 return GetChoice();
             }
+            
             return (MenuOption)choice;
         }
-
-
     }
 }
