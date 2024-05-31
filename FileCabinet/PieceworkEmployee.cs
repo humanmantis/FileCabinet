@@ -3,7 +3,7 @@
     public class PieceworkEmployee : Employee
     {
         public Dictionary<TaskPrices.TaskType, int> CompletedTasks { get; set; }
-        public new decimal Salary
+        public override decimal Salary
         {
             get
             {

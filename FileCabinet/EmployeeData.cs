@@ -12,6 +12,7 @@ namespace FileCabinet
             employees.Add(new FixedSalaryEmployee("Ivanchenko", "Ivan", "Ivanovych", new DateTime(1980, 1, 1), "Engineer", "IT", 101, "123-45-67", "ivan@mail.com", 900, 20, new DateTime(2020, 1, 1), ""));
             employees.Add(new HourlyWageEmployee("Petrenko", "Petro", "Petrovych", new DateTime(1985, 2, 2), "Manager", "HR", 102, "123-45-68", "petro@mail.com", 100, 185, new DateTime(2020, 2, 2), ""));
             employees.Add(new PieceworkEmployee("Mykulenko", "Mykola", "Mykolaiovych", new DateTime(1990, 3, 3), "Director", "Top", 103, "123-45-69", "mykola@mail.com", new Dictionary<TaskPrices.TaskType, int>() { { TaskPrices.TaskType.Backend, 5 }, { TaskPrices.TaskType.Documentation, 4 } }, new DateTime(2020, 3, 3), ""));
+            employees.Add(new HourlyWageEmployee("Bohdan", "Ivan", "Petrovych", new DateTime(1985, 2, 2), "Manager", "HR", 102, "123-45-68", "petro@mail.com", 100, 185, new DateTime(2020, 2, 2), ""));
         }
 
         public void AddRecord()
@@ -81,6 +82,13 @@ namespace FileCabinet
                 Console.WriteLine(employee);
                 Console.WriteLine("------------------------");
             }
+        }
+
+        public void SortBySalary()
+        {
+            Console.WriteLine("Sort by salary: ");
+            employees.Sort();
+            ShowAllRecords();
         }
 
         private Employee FindEmployee()

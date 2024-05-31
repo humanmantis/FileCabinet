@@ -23,6 +23,9 @@ while (true)
         case MenuOption.PrintAllRecords:
             employeeData.ShowAllRecords();
             break;
+        case MenuOption.SortBySalary:
+            employeeData.SortBySalary();
+            break;
         case MenuOption.Exit:
             Environment.Exit(0);
             break;

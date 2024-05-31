@@ -4,7 +4,7 @@
     {
         public decimal DailyRate { get; set; }
         public uint Workdays { get; set; }
-        public new decimal Salary
+        public override decimal Salary
         {
             get
             {
