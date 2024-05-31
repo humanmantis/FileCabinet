@@ -1,7 +1,7 @@
 ﻿
 namespace FileCabinet
 {
-    public class Employee
+    public class Employee: IComparable<Employee>
     {
         private protected static uint NextId = 1;
         public uint Id { get; private protected set; }
@@ -14,7 +14,7 @@ namespace FileCabinet
         public ushort Room { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public decimal Salary { get; set; }
+        public virtual decimal Salary { get; set; }
         public DateTime HireDate { get; set; }
         public string Note { get; set; }
 
@@ -68,6 +68,22 @@ namespace FileCabinet
                 $"Email: {Email}\n" +
                 $"Hire Date: {HireDate.ToShortDateString()}\n" +
                 $"Note: {Note}";
+        }
+
+        public int CompareTo(Employee? other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            int salaryComparison = Salary.CompareTo(other.Salary);
+            if (salaryComparison != 0)
+            {
+                return salaryComparison;
+            }
+
+            return Id.CompareTo(other.Id);
         }
         public virtual decimal CalculateMonthlySalary()
         {

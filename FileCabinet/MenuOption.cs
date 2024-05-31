@@ -9,6 +9,7 @@ namespace FileCabinet
         UpdateRecord,
         ShowRecord,
         PrintAllRecords,
+        SortBySalary,
         Exit,
         FillWithTestData
     }

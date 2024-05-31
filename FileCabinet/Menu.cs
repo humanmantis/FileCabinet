@@ -9,6 +9,7 @@
             "Update a record",
             "Show a record",
             "Print all records",
+            "Sort by salary",
             "Exit",
             "Fill with test data"
         };

@@ -4,7 +4,7 @@
     {
         public decimal HourlyRate { get; set; }
         public uint HoursWorkedPerMonth { get; set; }
-        public new decimal Salary
+        public override decimal Salary
         {
             get
             {
